@@ -1,3 +1,11 @@
-# Introduction to renotebook
+* Introduction to renotebook                                              :TOC:
+  - [[#development][Development]]
+  - [[#other][Other]]
 
+** Development
+*** Features
+ - System configuration stored in 'secrets.clj' file.
+ - User configuration stored in Java Preferences.
+
+** Other 
 TODO: write [great documentation](http://jacobian.org/writing/what-to-write/)

@@ -34,38 +34,37 @@
 ;; (.get pref-node "remarkable" nil)
 ;; (.put pref-node "password" password)
 
-;; Default user is 'root'
 ;; Assumes that SSH keys have been configured to allow passwordless access.
 
 (defn list-prefs []
-  (map (fn [key]
-         (print key " ")
-         (println (.get pref-node key nil)))
-       (.keys pref-node))
-  )
+(map (fn [key]
+       (print key " ")
+       (println (.get pref-node key nil)))
+     (.keys pref-node))
+)
 
 (def debug true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REPL Commands
 (defn help []
-  (println "Useful commands:")
-  (println "  (help)")
-  (println "  (reload)")
-  (println "  (re-ssh string)")
-  (println "  (list-prefs)")
-  )
+(println "Useful commands:")
+(println "  (help)")
+(println "  (reload)")
+(println "  (re-ssh string)")
+(println "  (list-prefs)")
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utilities / Scriptlets
 (defn cmd-download []
-  [["scp" "-r" re-notebooks dir-notebooks ]])
+[["scp" "-r" re-notebooks dir-notebooks ]])
 
 (defn cmd-rsync []
 "Implemented as a function which can create an updated string at runtime."
 [["rsync"
   "-r" "--rsync-path=/opt/bin/rsync"
-  (str "root@" remarkable ":" re2-notebooks )
+  (str user "@" remarkable ":" re-notebooks )
   dir-notebooks]]
 )
 
@@ -73,10 +72,10 @@
 ;; Tests
 ;; Testing how tagged arguments are handles
 (defn re-test [string {:keys [username] :as options}]
-  (println string)
-  (println username)
-  (pp/pprint options)
-  )
+(println string)
+(println username)
+(pp/pprint options)
+)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell Commands
@@ -84,7 +83,7 @@
 (let [cmd ["rsync"
            "-r"
            "--rsync-path=/opt/bin/rsync"
-           (str "root@" remarkable ":/home/root/" re2-notebooks)
+           (str user "@" remarkable ":" re-notebooks)
            dir-notebooks]
       ]
   (if debug
@@ -119,32 +118,32 @@
 (let [agent (ssh/ssh-agent {})]
   (println "cmd: " cmd)
   (let [session (ssh/session agent remarkable
-                             {:username "root" :strict-host-key-checking :no})]
+                             {:username user :strict-host-key-checking :no})]
     (ssh/with-connection session
       (println (:out (ssh/ssh session {:cmd cmd})))
       )
     )))
 
 (defn re-ssh-tunnel [cmds]
-"Takes an array of bash commands, stored as an array."
-(let [agent (ssh/ssh-agent {})]
-  (let [session (ssh/session agent remarkable
-                             {:username "root" :strict-host-key-checking :no})]
-    (ssh/with-connection session
-      (map (fn [cmd]
-             (let [cmd-str (str/join " " cmd)
-                   result (ssh/ssh session {:cmd cmd-str})]
-               (println cmd)
-               ))
-           cmds)
-      )))
-)
+  "Takes an array of bash commands, stored as an array."
+  (let [agent (ssh/ssh-agent {})]
+    (let [session (ssh/session agent remarkable
+                               {:username user :strict-host-key-checking :no})]
+      (ssh/with-connection session
+        (map (fn [cmd]
+               (let [cmd-str (str/join " " cmd)
+                     result (ssh/ssh session {:cmd cmd-str})]
+                 (println cmd)
+                 ))
+             cmds)
+        )))
+  )
 
 (defn re-restart-xochitl []
-(re-ssh "systemctl restart xochitl"))
+  (re-ssh "systemctl restart xochitl"))
 
 (defn re-grep-metadata [string]
-(re-ssh (str/join " " ["cd .local/share/remarkable/xochitl;" "grep" "-r" string "."]))
+  (re-ssh (str/join " " ["cd .local/share/remarkable/xochitl;" "grep" "-r" string "."]))
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PDF Generation
@@ -190,21 +189,22 @@
   )
 
 ;; CLI Commands for 'getting things done'
+;; TODO: Fix these to use functions, which can be passed the notebook to use.
 (def build-notebook
   [["cd" dir-notebooks]
-   ["tar" "cf" (str "../" notebook ".rmn") (str notebook "*")]])
+   ["tar" "cf" (str "../" selected-notebook ".rmn") (str selected-notebook "*")]])
 
 (def copy-notebook-from-re2
   [["cd" dir-notebooks]
    ["scp" "-r"
-    (str "root@" remarkable ":/home/root/.local/share/remarkable/xochitl/" notebook "*")
+    (str user "@" remarkable ":" re-notebooks selected-notebook "*")
     "."]
    ])
 
 (def copy-notebook-to-re2
   [["cd" dir-notebooks]
    ["scp" "-r"
-    (str "root@" remarkable ":/home/root/.local/share/remarkable/xochitl/" notebook "*")
+    (str user "@" remarkable ":" re-notebooks selected-notebook "*")
     "."]
    ])
 
@@ -219,7 +219,7 @@
 
 (defn status []
   (println "---")
-  (println "Notebook: " notebook)
+  (println "Notebook: " selected-notebook)
   (println "---")
   (println "To build:")
   (display-shell build-notebook)
@@ -384,6 +384,6 @@
   "I don't do a whole lot ... yet."
   [& args]
   ;; (help)
-  (decode-notebook notebook)
+  ;; (decode-notebook selected-notebook)
 
   )
