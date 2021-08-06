@@ -1,5 +1,6 @@
 * Introduction to renotebook                                              :TOC:
   - [[#development][Development]]
+  - [[#todos][TODOs]]
   - [[#other][Other]]
 
 ** Development
@@ -7,5 +8,11 @@
  - System configuration stored in 'secrets.clj' file.
  - User configuration stored in Java Preferences.
 
+** TODOs
+- Separate decode-encode functions and add tests.
+- Add function to pull/backup all notebooks from Remarkable tablet.
+- Convert notebook to SVG format (line based).
+- Separate out PDF document creator (links don't currently work).
+ 
 ** Other 
 TODO: write [great documentation](http://jacobian.org/writing/what-to-write/)
