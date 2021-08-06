@@ -15,6 +15,7 @@
   (:require [org.clojars.smee.binary.core :as b]
             [clojure.java.io :as io]
             [clojure.core.match :as m])
+  (:require [renotebook.decode-encode :as de])
   ;; WIP  (:require [renotebook.hershey :as h])
   (:import org.clojars.smee.binary.core.BinaryIO
            java.io.DataInput)
@@ -352,38 +353,38 @@
 ;; .content  - JSON Format
 ;; .pagedata - Line format - List of template used on each page
 (defn decode-notebook [notebook]
-  (let [metadata (json/read-str (slurp (str dir-notebooks notebook ".metadata" )))
-        content  (json/read-str (slurp (str dir-notebooks notebook ".content" )))
-        pages    (content "pages")
-        pagedata (str/split (slurp (str dir-notebooks notebook ".pagedata" )) #"\n")
-        ]
+(let [metadata (json/read-str (slurp (str dir-notebooks notebook ".metadata" )))
+content  (json/read-str (slurp (str dir-notebooks notebook ".content" )))
+pages    (content "pages")
+pagedata (str/split (slurp (str dir-notebooks notebook ".pagedata" )) #"\n")
+]
 
-    (println)
-    (println "Metadata")
-    (pp/pprint metadata)
-    (println)
+(println)
+(println "Metadata")
+(pp/pprint metadata)
+(println)
 
-    (println "Content")
-    (pp/pprint content)
-    (println)
+(println "Content")
+(pp/pprint content)
+(println)
 
-    (println "Pagedata")
-    (pp/pprint pagedata)
-    (println)
+(println "Pagedata")
+(pp/pprint pagedata)
+(println)
 
-    (println "Pages")
-    (dorun (map (fn [p] (println "  " p)) pages))
-    ;; (pp/pprint pages)
-    (println)
+(println "Pages")
+(dorun (map (fn [p] (println "  " p)) pages))
+;; (pp/pprint pages)
+(println)
 
-    (dorun (map (fn [p] (decode-notebook-page notebook p)) pages))
-    ))
+(dorun (map (fn [p] (decode-notebook-page notebook p)) pages))
+))
 
 
 (defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  ;; (help)
-  ;; (decode-notebook selected-notebook)
+"I don't do a whole lot ... yet."
+[& args]
+;; (help)
+;; (decode-notebook selected-notebook)
 
-  )
+)
