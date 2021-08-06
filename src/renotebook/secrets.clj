@@ -15,10 +15,10 @@
   (:gen-class) )
 
 (def remarkable    "")
-(def user          "")
+(def user          "root")
 (def password      "")
-(def re-notebooks  ".local/share/remarkable/xochitl/")
-(def dir-notebooks "resources/notebooks/")
+(def re-notebooks  "/home/root/.local/share/remarkable/xochitl/")
+(def dir-notebooks "~/Documents/remarkable/")
 
 ;; Default Notebook
 (def quick-sheets      "b7b1827c-28a5-4f29-a6b8-9ce7fe523270")

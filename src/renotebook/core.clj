@@ -49,34 +49,34 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REPL Commands
 (defn help []
-(println "Useful commands:")
-(println "  (help)")
-(println "  (reload)")
-(println "  (re2-ssh string)")
-(println "  (list-prefs)")
-)
+  (println "Useful commands:")
+  (println "  (help)")
+  (println "  (reload)")
+  (println "  (re-ssh string)")
+  (println "  (list-prefs)")
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utilities / Scriptlets
 (defn cmd-download []
-[["scp" "-r" (str "/home/.root/" re2-notebooks) dir-notebooks ]])
+  [["scp" "-r" re-notebooks dir-notebooks ]])
 
 (defn cmd-rsync []
 "Implemented as a function which can create an updated string at runtime."
 [["rsync"
   "-r" "--rsync-path=/opt/bin/rsync"
-  (str "root@" remarkable ":/home/root/" re2-notebooks )
+  (str "root@" remarkable ":" re2-notebooks )
   dir-notebooks]]
 )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tests
 ;; Testing how tagged arguments are handles
-(defn re2-test [string {:keys [username] :as options}]
-(println string)
-(println username)
-(pp/pprint options)
-)
+(defn re-test [string {:keys [username] :as options}]
+  (println string)
+  (println username)
+  (pp/pprint options)
+  )
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell Commands
@@ -115,7 +115,7 @@
 )
 
 ;; SSH Command Tunnel;
-(defn re2-ssh [cmd]
+(defn re-ssh [cmd]
 (let [agent (ssh/ssh-agent {})]
   (println "cmd: " cmd)
   (let [session (ssh/session agent remarkable
@@ -125,26 +125,26 @@
       )
     )))
 
-(defn re2-ssh-tunnel [cmds]
+(defn re-ssh-tunnel [cmds]
 "Takes an array of bash commands, stored as an array."
-  (let [agent (ssh/ssh-agent {})]
-    (let [session (ssh/session agent remarkable
-                               {:username "root" :strict-host-key-checking :no})]
-      (ssh/with-connection session
-        (map (fn [cmd]
-               (let [cmd-str (str/join " " cmd)
-                     result (ssh/ssh session {:cmd cmd-str})]
-                 (println cmd)
-                 ))
-             cmds)
-        )))
-  )
+(let [agent (ssh/ssh-agent {})]
+  (let [session (ssh/session agent remarkable
+                             {:username "root" :strict-host-key-checking :no})]
+    (ssh/with-connection session
+      (map (fn [cmd]
+             (let [cmd-str (str/join " " cmd)
+                   result (ssh/ssh session {:cmd cmd-str})]
+               (println cmd)
+               ))
+           cmds)
+      )))
+)
 
-(defn re2-restart-xochitl []
-  (re2-ssh "systemctl restart xochitl"))
+(defn re-restart-xochitl []
+(re-ssh "systemctl restart xochitl"))
 
-(defn re2-grep-metadata [string]
-  (re2-ssh (str/join " " ["cd .local/share/remarkable/xochitl;" "grep" "-r" string "."]))
+(defn re-grep-metadata [string]
+(re-ssh (str/join " " ["cd .local/share/remarkable/xochitl;" "grep" "-r" string "."]))
   )
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PDF Generation
