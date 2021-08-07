@@ -1,13 +1,18 @@
-* renotebook
+* renotebook :TOC:
+  - [[#introduction][Introduction]]
+  - [[#installation][Installation]]
+  - [[#usage][Usage]]
+  - [[#options][Options]]
+  - [[#useful-tools-used-by-this-project][Useful Tools used by this Project]]
+  - [[#license][License]]
 
+** Introduction
 Tool for programatically working with reMarkable Notebooks
 
 ** Installation
-
 Download from https://github.com:PaulSchulz/renotebook.git
 
 ** Usage
-
 FIXME: explanation
 
     $ java -jar renotebook-0.1.0-standalone.jar [args]
@@ -16,13 +21,27 @@ FIXME: explanation
 
 FIXME: listing of options this app accepts.
 
-** Examples
+** Useful Tools used by this Project
+*** reMArkable Entware
+Follow the instructions from Github
+- [[https://github.com/Evidlo/remarkable_entware]]
 
-...
+Installation may require linking the /opt directory.
+#+begin_src shell
+  ln -s /home/root/.entware /opt
+#+end_src
 
-*** Bugs
+Once installed, additional software can be installed from the Entware and Toltec
+repositories using 'opkg'.
 
-...
+*** Rsync (opkg install rsync)
+
+Rsync is usefull for backing up and copying the Remarkable documents.
+#+begin_src shell
+  cd ~/Documents
+  rsync -info=STATS --human-readable \
+    -r root@$HOST:/home/root/.local/share/remarkable/xchitl/ remarkable/
+#+end_src
 
 ** License
 
