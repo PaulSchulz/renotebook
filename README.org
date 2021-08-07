@@ -4,6 +4,7 @@
   - [[#usage][Usage]]
   - [[#options][Options]]
   - [[#useful-tools-used-by-this-project][Useful Tools used by this Project]]
+  - [[#useful-clojure-libraries][Useful Clojure Libraries]]
   - [[#license][License]]
 
 ** Introduction
@@ -42,6 +43,11 @@ Rsync is usefull for backing up and copying the Remarkable documents.
   rsync -info=STATS --human-readable \
     -r root@$HOST:/home/root/.local/share/remarkable/xchitl/ remarkable/
 #+end_src
+
+** Useful Clojure Libraries
+The following are some Clojure Libraries that have proved to be useful. They may currently be used, or noted here for future reference.
+
+- clj-ssh.cli and clj-ssh.ssh for executing remote ssh commands on remarkable tablet.
 
 ** License
 
