@@ -45,15 +45,6 @@
 (def debug true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; REPL Commands
-(defn help []
-  (println "Useful commands:")
-  (println "  (help)")
-  (println "  (reload)")
-  (println "  (re-ssh string)")
-  (println "  (list-prefs)"))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Utilities / Scriptlets
 (defn cmd-download []
   [["scp" "-r" re-notebooks dir-notebooks]])
@@ -74,9 +65,11 @@
   (pp/pprint options))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Shell Commands
-(defn sh-rsync []
+;; Shell Commands / Working with notebooks
+(defn sh-rsync [remarkable user re-notebooks dir-notebooks]
+  "Use rsync to replicate notebooks from Remarkable tablet"
   (let [cmd ["rsync"
+             "--info=STATS" "--human-readable"
              "-r"
              "--rsync-path=/opt/bin/rsync"
              (str user "@" remarkable ":" re-notebooks)
@@ -86,6 +79,10 @@
         (println "Command")
         (pp/pprint cmd)))
     (pp/pprint (apply sh/sh cmd))))
+
+(defn retrieve []
+  "Retrieve reMarkable notebooks from tablet."
+  (sh-rsync remarkable user re-notebooks dir-notebooks))
 
 (defn sh-git-commit []
   (let [dir dir-notebooks
@@ -322,3 +319,14 @@
   ;; (help)
   ;; (decode-notebook selected-notebook)
   )
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REPL Command
+(defn help []
+  (println ";; Useful commands:")
+  (println "  (help)")
+  (println "  (reload)")
+  (println "  (re-ssh string)")
+  (println "  (list-prefs)")
+  (println ";; Working with reMarkable table")
+  (println "  (retrieve)"))
