@@ -1,6 +1,7 @@
 (ns renotebook.core-test
-  (:require [clojure.test :refer :all]
-            [renotebook.core :refer :all]))
+  (:require
+   [clojure.test :refer :all]
+   [renotebook.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

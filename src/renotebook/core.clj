@@ -128,7 +128,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-
 (defn reload []
   (use 'renotebook.core :reload-all)
   (println ";; namespace reloaded"))
@@ -223,9 +222,9 @@
 
 (def pen-lookup
   {;; 0x0  "Fineliner"
-   ;; 0x0  "Mechanical pencil"
-   ;; 0x0  "Highlighter"
-   ;; 0x0  "Calligraphy pen"
+ ;; 0x0  "Mechanical pencil"
+ ;; 0x0  "Highlighter"
+ ;; 0x0  "Calligraphy pen"
    0x0C "Paintbrush"
    0x0E "Pencil"
    0x0F "Ballpoint pen"
@@ -268,7 +267,7 @@
         metafile (str dir-notebooks notebook "/" page "-metadata.json")
         d (.exists (io/as-file datafile))
         m (.exists (io/as-file metafile))]
-    ;; Check if metadata for page exists
+  ;; Check if metadata for page exists
     (println "Page" page)
     (if m
       (let [metadata (json/read-str (slurp metafile))]
@@ -324,9 +323,16 @@
 ;; REPL Command
 (defn help []
   (println ";; Useful commands:")
-  (println "  (help)")
-  (println "  (reload)")
-  (println "  (re-ssh string)")
-  (println "  (list-prefs)")
-  (println ";; Working with reMarkable table")
-  (println "  (retrieve)"))
+  (println "(help)")
+  (println "(reload)")
+  (println "(re-ssh string)")
+  (println "(list-prefs)")
+  (println)
+  (println ";; Working with reMarkable tablet")
+  (println "(retrieve) ;; - Retrieve notebooks from tablet")
+  (println)
+  (println ";; Testing - decode-encode")
+  (println "(in-ns 'renotebook.decode-encode-test)")
+  (println "(clojure.core/use 'clojure.test)")
+  (println "(run-tests)")
+  (println))
