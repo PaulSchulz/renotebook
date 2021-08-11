@@ -296,6 +296,15 @@
 ;; (deftest decode-test
 ;;  (testing "Decode (and load) a reMarkable notebook"
 ;;    (is (= (rm-decode "" "") {}))))
+(def notebooks-test
+  {:test
+   {:notebook "7cb44c92-78c7-449e-9db4-936663596e74"
+    :page     "642a631f-fed7-49c8-a43e-69790345ea20"}
+   :diagram
+   {:notebook "4d37af63-e017-4fed-a06e-1fa37e62bbc2"
+    :page     "5fac703c-9701-4df3-a00b-f666ae014453"}})
+
+(def notebook (notebooks-test :diagram))
 
 ;; Page data
 (defn reload []
@@ -304,8 +313,8 @@
 
 (defn decode-notebook-data-dev []
   (let [dir-notebooks  "resources/notebooks/"
-        notebook       "7cb44c92-78c7-449e-9db4-936663596e74"
-        page           "642a631f-fed7-49c8-a43e-69790345ea20"
+        notebook       "4d37af63-e017-4fed-a06e-1fa37e62bbc2"
+        page           "5fac703c-9701-4df3-a00b-f666ae014453"
         datafile       (str dir-notebooks notebook "/" page ".rm")]
     (decode-notebook-data datafile)))
 
@@ -343,7 +352,7 @@
    :fill              "none"
    :fill-opacity      "0"
    :stroke            "#000000"
-   :stroke-width      "1.00"
+   :stroke-width      "5.00"
    :stroke-linecap    "round"
    :stroke-linejoin   "miter"
    :stroke-miterlimit "4"
@@ -410,13 +419,9 @@
         footer " </g>
 </svg>
 "
-        content (str "<path
-       style=\"opacity:1;vector-effect:none;fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.365;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1\"
-       d=\"M 58.282847,94.995078 109.69633,62.53259 144.84839,106.83706\"
-       id=\"path833\" />"
-                     (apply str
-                            (mapv path-string
-                                  (convert-strokes (get-strokes))
-                                  (repeat style))))]
+        content (apply str
+                       (mapv path-string
+                             (convert-strokes (get-strokes))
+                             (repeat style)))]
 
     (spit filename (str header content footer))))
