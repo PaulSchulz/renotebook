@@ -303,10 +303,39 @@
   (use 'renotebook.decode-encode :reload-all))
 
 (defn decode-notebook-data-dev []
-  (let [dir-notebooks     "resources/notebooks/"
-        notebook          "7cb44c92-78c7-449e-9db4-936663596e74"
-        page              "642a631f-fed7-49c8-a43e-69790345ea20"]
-    (decode-notebook-page dir-notebooks notebook page)))
+  (let [dir-notebooks  "resources/notebooks/"
+        notebook       "7cb44c92-78c7-449e-9db4-936663596e74"
+        page           "642a631f-fed7-49c8-a43e-69790345ea20"
+        datafile       (str dir-notebooks notebook "/" page ".rm")]
+    (decode-notebook-data datafile)))
+
+(defn get-strokes []
+  (-> (decode-notebook-data-dev)
+      :layers
+      first
+      :strokes))
+
+(defn get-stroke []
+  (-> (decode-notebook-data-dev)
+      :layers
+      first
+      :strokes
+      first
+      :segments))
+
+;; Convert stroke (segments) to path points
+(defn convert-stroke-to-path [stroke]
+  (mapv (fn [point] [(:xpos point) (:ypos point)]) stroke))
+
+;;  ?/?
+(defn convert-strokes [strokes]
+  (mapv (fn [stroke]
+          (convert-stroke-to-path (:segments stroke)))
+        strokes))
+
+;; Load Data
+;;(def notebook-data (decode-notebook-data-dev))
+
 
 (def style
   {:opacity           "1"
@@ -314,7 +343,7 @@
    :fill              "none"
    :fill-opacity      "0"
    :stroke            "#000000"
-   :stroke-width      "1"
+   :stroke-width      "1.00"
    :stroke-linecap    "round"
    :stroke-linejoin   "miter"
    :stroke-miterlimit "4"
@@ -326,6 +355,26 @@
   (str/join
    ";"
    (map (fn [[key value]] (str (name key) ":" value)) style)))
+
+(def line
+  [[68.282847 104.995078]
+   [119.69633 52.53259]
+   [154.84839,116.83706]])
+
+;; Convert array or point to string.
+(defn format-line [line]
+  (str "M "
+       (str/join " "
+                 (map (fn [[x y]] (str x "," y)) line))))
+
+;; Convert string of points to array.
+(defn decode-line [string]
+  (mapv (fn [point] (str/split point #","))
+        (drop 1 (str/split string #" "))))
+
+(defn path-string [line style]
+  (str "<path style=\"" (format-style style) "\" "
+       "d=\"" (format-line line) "\" />"))
 
 (defn output-svg-dev []
   (let [filename "resources/drawing2.svg"
@@ -365,6 +414,9 @@
        style=\"opacity:1;vector-effect:none;fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.365;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1\"
        d=\"M 58.282847,94.995078 109.69633,62.53259 144.84839,106.83706\"
        id=\"path833\" />"
-                     "<path style=\"" (format-style style) "\" d=\"M 68.282847,104.995078 119.69633,52.53259 154.84839,116.83706\"
-       id=\"path834\" />")]
+                     (apply str
+                            (mapv path-string
+                                  (convert-strokes (get-strokes))
+                                  (repeat style))))]
+
     (spit filename (str header content footer))))
