@@ -275,22 +275,96 @@
 ;;   (run-tests)
 
 ;; Test data
-(def dir-notebooks     "resources/notebooks/")
-(def selected-notebook "7cb44c92-78c7-449e-9db4-936663596e74")
 
 ;; Tests
 (deftest notebook-metatdata-test
-  (testing "Check for metadata"
-    (is (notebook-metadata? dir-notebooks selected-notebook)))
-  (testing "Check for metadata (negative)"
-    (is (not (notebook-metadata? dir-notebooks (str selected-notebook "x"))))))
+  (let [dir-notebooks  "resources/notebooks/"
+        selected-notebook "7cb44c92-78c7-449e-9db4-936663596e74"]
+    (testing "Check for metadata"
+      (is (notebook-metadata? dir-notebooks selected-notebook)))
+    (testing "Check for metadata (negative)"
+      (is (not (notebook-metadata? dir-notebooks (str selected-notebook "x")))))))
 
 (deftest notebook-content-test
-  (testing "Check for content"
-    (is (notebook-content? dir-notebooks selected-notebook)))
-  (testing "Check for content (negative)"
-    (is (not (notebook-content? dir-notebooks (str selected-notebook "x"))))))
+  (let [dir-notebooks  "resources/notebooks/"
+        selected-notebook "7cb44c92-78c7-449e-9db4-936663596e74"]
+    (testing "Check for content"
+      (is (notebook-content? dir-notebooks selected-notebook)))
+    (testing "Check for content (negative)"
+      (is (not (notebook-content? dir-notebooks (str selected-notebook "x")))))))
 
-                                        ;(deftest decode-test
-                                        ;  (testing "Decode (and load) a reMarkable notebook"
-                                        ;    (is (= (rm-decode "" "") {}))))
+;; (deftest decode-test
+;;  (testing "Decode (and load) a reMarkable notebook"
+;;    (is (= (rm-decode "" "") {}))))
+
+;; Page data
+(defn reload []
+  (println ";; Reload namespace")
+  (use 'renotebook.decode-encode :reload-all))
+
+(defn decode-notebook-data-dev []
+  (let [dir-notebooks     "resources/notebooks/"
+        notebook          "7cb44c92-78c7-449e-9db4-936663596e74"
+        page              "642a631f-fed7-49c8-a43e-69790345ea20"]
+    (decode-notebook-page dir-notebooks notebook page)))
+
+(def style
+  {:opacity           "1"
+   :vector-effect     "none"
+   :fill              "none"
+   :fill-opacity      "0"
+   :stroke            "#000000"
+   :stroke-width      "1"
+   :stroke-linecap    "round"
+   :stroke-linejoin   "miter"
+   :stroke-miterlimit "4"
+   :stroke-dasharray  "none"
+   :stroke-dashoffset "0"
+   :stroke-opacity    "1"})
+
+(defn format-style [style]
+  (str/join
+   ";"
+   (map (fn [[key value]] (str (name key) ":" value)) style)))
+
+(defn output-svg-dev []
+  (let [filename "resources/drawing2.svg"
+        header   "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>
+<svg
+   xmlns:dc=\"http://purl.org/dc/elements/1.1/\"
+        xmlns:cc=\"http://creativecommons.org/ns#\"
+   xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\"
+   xmlns:svg=\"http://www.w3.org/2000/svg\"
+   xmlns=\"http://www.w3.org/2000/svg\"
+   width=\"1404px\"
+   height=\"1872px\"
+   viewBox=\"0 0 1404 1872\"
+   version=\"1.1\"
+   id=\"svg8\">
+  <defs
+     id=\"defs2\" />
+  <metadata
+     id=\"metadata5\">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about=\"\">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource=\"http://purl.org/dc/dcmitype/StillImage\" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     id=\"layer1\">
+"
+        footer " </g>
+</svg>
+"
+        content (str "<path
+       style=\"opacity:1;vector-effect:none;fill:none;fill-opacity:0;stroke:#000000;stroke-width:3.365;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1\"
+       d=\"M 58.282847,94.995078 109.69633,62.53259 144.84839,106.83706\"
+       id=\"path833\" />"
+                     "<path style=\"" (format-style style) "\" d=\"M 68.282847,104.995078 119.69633,52.53259 154.84839,116.83706\"
+       id=\"path834\" />")]
+    (spit filename (str header content footer))))
