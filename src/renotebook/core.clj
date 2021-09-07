@@ -7,9 +7,6 @@
    [clojure.pprint :as pp]
    [clojure.string :as str])
 
-  ;; Decoding/Encoding reMarkable Notebooks
-  (:require [renotebook.decode-encode :as de])
-
   ;; Parsing binary data
   (:require [org.clojars.smee.binary.core :as b]
             [clojure.java.io :as io]

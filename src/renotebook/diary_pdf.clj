@@ -1,8 +1,11 @@
-(ns renotebook.diary-pdf)
+(ns renotebook.diary-pdf
+  (:require [clj-pdf.core :as pdf])
+  (:gen-class))
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PDF Generation
 ;; - anchors don't appear to work in remarkable, but do work in evince.
 (defn pdf-create []
+
   (pdf/pdf
    [{:header "A PDF Document"
      :size   :a4
