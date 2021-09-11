@@ -7,6 +7,11 @@
    [clojure.pprint :as pp]
    [clojure.string :as str])
 
+  (:require [renotebook.filesystem :as fs])
+
+  ;; reMarkable login details
+  (:use [renotebook.secrets])
+
   ;; Parsing binary data
   (:require [org.clojars.smee.binary.core :as b]
             [clojure.java.io :as io]
@@ -18,10 +23,6 @@
   ;; Used to hold local preferences/configuration
   (:import (java.util.prefs Preferences))
   (:gen-class))
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Developer Preferences are read from the
-(use 'renotebook.secrets)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User Preferences
@@ -49,7 +50,7 @@
 (defn cmd-rsync []
   "Implemented as a function which can create an updated string at runtime."
   [["rsync"
-    "-r" "--rsync-path=/opt/bin/rsync"
+    "-r"
     (str user "@" remarkable ":" re-notebooks)
     dir-notebooks]])
 
