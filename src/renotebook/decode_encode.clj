@@ -58,7 +58,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; reMarkable notebook page file - .lines
 
-
 (def header-string "reMarkable .lines file, version=5          ")
 (defn fixed-string [len]
   (b/string header-string :length len))
@@ -311,6 +310,7 @@
   (println ";; Reload namespace")
   (use 'renotebook.decode-encode :reload-all))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn decode-notebook-data-dev []
   (let [dir-notebooks  "resources/notebooks/"
         notebook       "4d37af63-e017-4fed-a06e-1fa37e62bbc2"
@@ -344,7 +344,6 @@
 
 ;; Load Data
 ;;(def notebook-data (decode-notebook-data-dev))
-
 
 (def style
   {:opacity           "1"

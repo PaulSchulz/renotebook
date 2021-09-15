@@ -14,7 +14,7 @@
              dir]]
     (apply sh/sh cmd)))
 
-;; Lookup reMarkable metadata
+;; Retrieve reMarkable metadata
 (defn metadata [dir file]
   (json/read-str (slurp (str/join [dir file ".metadata"]))))
 

@@ -16,7 +16,10 @@
   (:require [org.clojars.smee.binary.core :as b]
             [clojure.java.io :as io]
             [clojure.core.match :as m])
-  (:require [renotebook.decode-encode :as de])
+
+  ;; Function libraries/modules
+  (:require [renotebook.decode-encode :as de]
+            [renotebook.svg :as resvg])
   ;; WIP  (:require [renotebook.hershey :as h])
   (:import org.clojars.smee.binary.core.BinaryIO
            java.io.DataInput)
@@ -220,9 +223,9 @@
 
 (def pen-lookup
   {;; 0x0  "Fineliner"
- ;; 0x0  "Mechanical pencil"
- ;; 0x0  "Highlighter"
- ;; 0x0  "Calligraphy pen"
+   ;; 0x0  "Mechanical pencil"
+   ;; 0x0  "Highlighter"
+   ;; 0x0  "Calligraphy pen"
    0x0C "Paintbrush"
    0x0E "Pencil"
    0x0F "Ballpoint pen"
@@ -248,8 +251,6 @@
           (width-lookup (stroke :width))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-
 (defn encode-notebook-data [data filename]
   (let [out (io/output-stream filename)]
     (b/encode codec-notebook out data)))
@@ -265,7 +266,7 @@
         metafile (str dir-notebooks notebook "/" page "-metadata.json")
         d (.exists (io/as-file datafile))
         m (.exists (io/as-file metafile))]
-  ;; Check if metadata for page exists
+    ;; Check if metadata for page exists
     (println "Page" page)
     (if m
       (let [metadata (json/read-str (slurp metafile))]
@@ -278,11 +279,26 @@
         [])
       (decode-notebook-data datafile))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Call filesystem interface with deaults
+(defn status []
+  (println "dir-notebooks: " dir-notebooks)
+  (println "remarkable:    " remarkable)
+  (println "user:          " user)
+  (println "re-notebooks:  " re-notebooks))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Call filesystem interface with deaults
+
+
+(defn ls []
+  (fs/ls dir-notebooks ""))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; File formats
 ;; .metadata - JSON Format
 ;; .content  - JSON Format
 ;; .pagedata - Line format - List of template used on each page
-
 
 (defn decode-notebook [notebook]
   (let [metadata (json/read-str (slurp (str dir-notebooks notebook ".metadata")))
@@ -319,7 +335,9 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REPL Command
-(defn help []
+(defn help
+  "Application help"
+  [& [section]]
   (println ";; Useful commands:")
   (println "(help)")
   (println "(reload)")
@@ -329,8 +347,19 @@
   (println ";; Working with reMarkable tablet")
   (println "(retrieve) ;; - Retrieve notebooks from tablet")
   (println)
+  (println ";; Working with downloaded filesystem")
+  (println "(fs/ls dir-notebooks \"\")                ;; - List reMarkable folder")
+  (println "(fs/metadata dir-notebooks quick-books) ;; - Retrieve metadata")
+  (println ";; With defaults")
+  (println "(ls)")
+  (println)
   (println ";; Testing - decode-encode")
   (println "(in-ns 'renotebook.decode-encode-test)")
   (println "(clojure.core/use 'clojure.test)")
   (println "(run-tests)")
+  (println)
+  (println ";; Sections")
+  (println "(help :svg)")
+  (if (= section :svg)
+    (resvg/help))
   (println))
