@@ -10,6 +10,7 @@
   (:require [renotebook.filesystem :as fs])
 
   ;; reMarkable login details
+  (:use [renotebook.options])
   (:use [renotebook.secrets])
 
   ;; Parsing binary data
@@ -21,10 +22,9 @@
   (:require [renotebook.decode-encode :as de]
             [renotebook.svg :as resvg])
   ;; WIP  (:require [renotebook.hershey :as h])
-  (:import org.clojars.smee.binary.core.BinaryIO
-           java.io.DataInput)
   ;; Used to hold local preferences/configuration
-  (:import (java.util.prefs Preferences))
+  (:import
+   (java.util.prefs Preferences))
   (:gen-class))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -136,7 +136,6 @@
 ;; CLI Commands for 'getting things done'
 ;; TODO: Fix these to use functions, which can be passed the notebook to use.
 
-
 (def build-notebook
   [["cd" dir-notebooks]
    ["tar" "cf" (str "../" selected-notebook ".rmn") (str selected-notebook "*")]])
@@ -154,7 +153,6 @@
     "."]])
 
 ;; If notebook is downloaded via RCU then in is in a 'tar' archive.
-
 
 (defn extract-notebook [filename]
   [["cd" dir-notebooks]
@@ -289,7 +287,6 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Call filesystem interface with deaults
-
 
 (defn ls []
   (fs/ls dir-notebooks ""))
