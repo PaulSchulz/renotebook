@@ -1,4 +1,4 @@
-;; Decode/Encode Remarkable Notebook  File format
+;; Decode/Encode reMarkable file format
 (ns renotebook.decode-encode
   ;; Parsing binary data
   (:require

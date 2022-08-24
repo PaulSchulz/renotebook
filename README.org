@@ -8,7 +8,8 @@
   - [[#license][License]]
 
 ** Introduction
-Tool for programatically working with reMarkable Notebooks
+Tools for programatically working with reMarkable Notebook files, and with the
+reMarkable Tablet.
 
 ** Installation
 Download from https://github.com:PaulSchulz/renotebook.git

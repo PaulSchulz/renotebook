@@ -23,9 +23,16 @@
             [renotebook.svg :as resvg])
   ;; WIP  (:require [renotebook.hershey :as h])
   ;; Used to hold local preferences/configuration
+  ;; - Stored in ~/.java/.userPrefs/renotebook/prefs.xml
   (:import
    (java.util.prefs Preferences))
   (:gen-class))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Utility Functions
+(defn reload []
+  (use 'renotebook.core :reload-all)
+  (println ";; namespace reloaded"))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; User Preferences
@@ -38,24 +45,18 @@
 ;; Assumes that SSH keys have been configured to allow passwordless access.
 
 (defn list-prefs []
+  (println "User Preferences - stored in Java preferences")
   (map (fn [key]
-         (print key " ")
+         (print "  " key " ")
          (println (.get pref-node key nil)))
        (.keys pref-node)))
 
 (def debug true)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Utilities / Scriptlets
+;; Utilities / Scripts
 (defn cmd-download []
   [["scp" "-r" re-notebooks dir-notebooks]])
-
-(defn cmd-rsync []
-  "Implemented as a function which can create an updated string at runtime."
-  [["rsync"
-    "-r"
-    (str user "@" remarkable ":" re-notebooks)
-    dir-notebooks]])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Tests
@@ -67,14 +68,18 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Shell Commands / Working with notebooks
+(defn cmd-rsync []
+  "Implemented as a function which can create an updated string at runtime."
+  ["rsync"
+   "--info=STATS" "--human-readable"
+   (str "--rsync-path=" re-rsync)
+   "-r"
+   (str user "@" remarkable ":" re-notebooks)
+   dir-notebooks])
+
 (defn sh-rsync [remarkable user re-notebooks dir-notebooks]
   "Use rsync to replicate notebooks from Remarkable tablet"
-  (let [cmd ["rsync"
-             "--info=STATS" "--human-readable"
-             "-r"
-             "--rsync-path=/opt/bin/rsync"
-             (str user "@" remarkable ":" re-notebooks)
-             dir-notebooks]]
+  (let [cmd (cmd-rsync remarkable user re-notebooks dir-notebooks)]
     (if debug
       (let []
         (println "Command")
@@ -85,6 +90,7 @@
   "Retrieve reMarkable notebooks from tablet."
   (sh-rsync remarkable user re-notebooks dir-notebooks))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn sh-git-commit []
   (let [dir dir-notebooks
         cmd ["sh" "-c"
@@ -128,10 +134,6 @@
   (re-ssh (str/join " " ["cd .local/share/remarkable/xochitl;" "grep" "-r" string "."])))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-(defn reload []
-  (use 'renotebook.core :reload-all)
-  (println ";; namespace reloaded"))
 
 ;; CLI Commands for 'getting things done'
 ;; TODO: Fix these to use functions, which can be passed the notebook to use.
@@ -221,9 +223,9 @@
 
 (def pen-lookup
   {;; 0x0  "Fineliner"
-   ;; 0x0  "Mechanical pencil"
-   ;; 0x0  "Highlighter"
-   ;; 0x0  "Calligraphy pen"
+ ;; 0x0  "Mechanical pencil"
+ ;; 0x0  "Highlighter"
+ ;; 0x0  "Calligraphy pen"
    0x0C "Paintbrush"
    0x0E "Pencil"
    0x0F "Ballpoint pen"
@@ -264,7 +266,7 @@
         metafile (str dir-notebooks notebook "/" page "-metadata.json")
         d (.exists (io/as-file datafile))
         m (.exists (io/as-file metafile))]
-    ;; Check if metadata for page exists
+  ;; Check if metadata for page exists
     (println "Page" page)
     (if m
       (let [metadata (json/read-str (slurp metafile))]
@@ -323,26 +325,20 @@
 
     (dorun (map (fn [p] (decode-notebook-page notebook p)) pages))))
 
-(defn -main
-  "I don't do a whole lot ... yet."
-  [& args]
-  ;; (help)
-  ;; (decode-notebook selected-notebook)
-  )
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; REPL Command
 (defn help
   "Application help"
   [& [section]]
+  (println ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;")
   (println ";; Useful commands:")
   (println "(help)")
   (println "(reload)")
-  (println "(re-ssh string)")
   (println "(list-prefs)")
   (println)
   (println ";; Working with reMarkable tablet")
-  (println "(retrieve) ;; - Retrieve notebooks from tablet")
+  (println "(re-ssh string) ;; Run command on reMarkable")
+  (println "(retrieve)      ;; Retrieve notebooks from tablet")
   (println)
   (println ";; Working with downloaded filesystem")
   (println "(fs/ls dir-notebooks \"\")                ;; - List reMarkable folder")
@@ -360,3 +356,11 @@
   (if (= section :svg)
     (resvg/help))
   (println))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn -main
+  "I don't do a whole lot ... yet."
+  [& args]
+  (help)
+  ;; (decode-notebook selected-notebook)
+  )
